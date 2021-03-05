@@ -21,8 +21,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Covid> _covidToDisplay = List<Covid>();
-  List<Covid> _covid = List<Covid>();
+  List<Covid> _covidToDisplay = <Covid>[];
+  List<Covid> _covid = <Covid>[];
   int sumCases = 0;
   int sumDeaths = 0;
   // Future _future;
@@ -80,25 +80,26 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             body: RefreshIndicator(
-              child: ListView.builder(
-                padding: EdgeInsets.all(5.0),
-                itemCount: _covidToDisplay.length + 1,
-                itemBuilder: (BuildContext context, index) {
-                  return index == 0
-                      ? _searchBar()
-                      : _homePageCard(context, index - 1);
-                },
+              child: Scrollbar(
+                child: ListView.builder(
+                  padding: EdgeInsets.all(5.0),
+                  itemCount: _covidToDisplay.length + 1,
+                  itemBuilder: (BuildContext context, index) {
+                    return index == 0
+                        ? _searchBar()
+                        : _homePageCard(context, index - 1);
+                  },
+                ),
               ),
-                onRefresh: _getData,
-      )
-    );
+              onRefresh: _getData,
+            ));
   }
 
   Future<void> _getData() async {
     setState(() {
       Services().getCovidData();
     });
-}
+  }
 
   _searchBar() {
     return Padding(
@@ -125,11 +126,9 @@ class _HomePageState extends State<HomePage> {
                               .contains(query.toLowerCase())))
                           .toList();
                     });
-                  }
-                );
-              },
-            )
-          ),
+                  });
+                },
+              )),
           Container(
               decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
               child: ListTile(
@@ -140,12 +139,9 @@ class _HomePageState extends State<HomePage> {
                 subtitle: Text(
                   "Global Deaths: " + sumDeaths.toString(),
                   style: whiteText,
-              ),
-            )
-          ),
-        ]
-      )
-    );
+                ),
+              )),
+        ]));
   }
 
   //HomePage Card Widget
@@ -157,54 +153,49 @@ class _HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Container(
-          decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-          child: ListTile(
-            contentPadding:
-              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailsPage(_covidToDisplay[index]),
-                  )
-                );
+            decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
+            child: ListTile(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailsPage(_covidToDisplay[index]),
+                    ));
               },
-            leading: Container(
-              padding: EdgeInsets.only(right: 12.0),
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(
-                    width: 1.0,
+              leading: Container(
+                padding: EdgeInsets.only(right: 12.0),
+                decoration: BoxDecoration(
+                    border: Border(
+                        right: BorderSide(
+                  width: 1.0,
                   color: Colors.white24,
-                  )
-                )
-              ),
-            child: Image.network(
+                ))),
+                child: Image.network(
                   _covidToDisplay[index].countryInfo.flag,
                   fit: BoxFit.scaleDown,
                   width: 100,
                 ),
               ),
-            title: Text(
+              title: Text(
                 _covidToDisplay[index].country,
                 style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-            subtitle: Row(
-              children: <Widget>[
-                Text(
-                "Total Cases: " + _covidToDisplay[index].cases.toString(),
-                style: TextStyle(color: Colors.white),
+              subtitle: Row(
+                children: <Widget>[
+                  Text(
+                    "Total Cases: " + _covidToDisplay[index].cases.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
-            ],
-          ),
-          trailing: Icon(
-            Icons.keyboard_arrow_right,
-            color: Colors.white,
-          ),
-        )
-      )
-    );
+              trailing: Icon(
+                Icons.keyboard_arrow_right,
+                color: Colors.white,
+              ),
+            )));
   }
 }
 
